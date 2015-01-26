@@ -24,13 +24,27 @@ time = 1:801;%time range -200:600 ms (used in Isik et al., 2014)
 
 full_dir_name = [brainstorm_db,protocol,'/data/test/1/'];
 
-% reorder file list in order of stimulus presentation 
-files = dir([full_dir_name 'data*bandpass.mat']);
-files = {files.name};
-files2 = dir([full_dir_name 'data*_02_bandpass.mat']);
-files2 = {files2.name};
-files1 = setdiff(files,files2);
-file_list = [files1 files2];
+%% reorder brainstorm file list in order of stimulus presentation -- probably a better way to do this
+all_files = dir([full_dir_name 'data*bandpass.mat']);
+all_files = {all_files.name};
+files{1} = all_files;
+file_breaks = sum(cellfun(@str2num,regexp([all_files{:}], '\d{3,}', 'match'))==1);
+
+for i = file_breaks:-1:2
+files_tmp = dir([full_dir_name 'data*_' sprintf('%02d',i) '_bandpass.mat']);
+files{2} = {files_tmp.name};
+file_inds{2} = cellfun(@str2num,regexp([files{2}{:}], '\d{3,}', 'match'));
+[~,ind{2}] = sort(file_inds{2});
+files{1} = setdiff(files{1}, files{i});
+end
+ 
+file_inds{1} = cellfun(@str2num,regexp([files{1}{:}], '\d{3,}', 'match'));
+[~,ind{1}] = sort(file_inds{1});
+
+file_list = [];
+for i = 1:file_breaks
+    file_list = [file_list files{i}(ind{i})];
+end
 
 rasters = zeros(length(nchannels), length(file_list), length(time));
 
