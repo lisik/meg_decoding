@@ -1,11 +1,13 @@
-function convert_to_raster(brainstorm_db, protocol, behave_file, raster_folder)
+function convert_to_raster(brainstorm_db, protocol, behave_file, raster_folder, time)
 % convert pre-processed brainstorm files to raster format for decoding
 % brainstorm_db - filepath for brainstorm databse (e.g.'~/brainstorm/brainstorm_db')
 % protocol - name of brainstorm protocol 
 % subject name - name of brainstorm subject 
 % behave_file - name of file with behavioral data
-% raster_folder - folder where rasters will be saved 
-% convert_to_raster('~/brainstorm/brainstorm_db', 'test', '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', '~/MEG_decoding_2013/raster_data/test')
+% raster_folder - folder where rasters will be saved
+% time - length of epoch time used in brainstorm - 801 (-200:600ms) is value used in Isik et al., 2014)
+% convert_to_raster('~/brainstorm/brainstorm_db', 'test', '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', '~/MEG_decoding_2013/raster_data/test', 801)
+
 
 if brainstorm_db(end)~='/'
     brainstorm_db = [brainstorm_db '/'];
@@ -20,7 +22,7 @@ end
 
 load(behave_file)
 nchannels = 1:306; % 306 MEG channels
-time = 1:801;%time range -200:600 ms (used in Isik et al., 2014)
+%time = 1:801;%time range -200:600 ms (used in Isik et al., 2014)
 
 full_dir_name = [brainstorm_db,protocol,'/data/test/1/'];
 
@@ -46,7 +48,7 @@ for i = 1:file_breaks
     file_list = [file_list files{i}(ind{i})];
 end
 
-rasters = zeros(length(nchannels), length(file_list), length(time));
+rasters = zeros(length(nchannels), length(file_list), time);
 
 for i = 1:length(file_list)
     
