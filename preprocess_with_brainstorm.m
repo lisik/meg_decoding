@@ -3,7 +3,7 @@ function preprocess_with_brainstorm(RawFilePath, fileNames, epochTime)
 % To run script, you must first open brainstorm and create new protocol
 % RawFilePath - file path for folder with raw MEG .fif data
 % fileNames - cell of names of raw MEG .fif file names
-% time interval relative to stimulus onset. [-.2, .6] used in (Isik et al, 2014)
+% time interval in seconds relative to stimulus onset. [-.2, .6] used in (Isik et al, 2014)
 
 SubjectNames = {'test'}; % default subject name
 %epochTime = [-0.2, .6]; % time interval relative to stimulus onset used in (Isik et al, 2014)
