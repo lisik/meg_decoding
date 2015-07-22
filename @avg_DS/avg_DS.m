@@ -271,7 +271,7 @@ methods
                 XTe_temp{iTimePeriod}{iCV} = zeros(nCh, nTest);
                 YTe_temp = zeros(nTest,1);
                 
-                for iLabel = 1:length(ds.label_names_to_use)
+                for iLabel = 1:length(ds.the_basic_DS.label_names_to_use)
                     indTr=find(YTr_all==ds.the_basic_DS.label_names_to_use(iLabel));
                     indTe=find(YTe_all==ds.the_basic_DS.label_names_to_use(iLabel));
                     perm_tr = randperm(length(indTr));
