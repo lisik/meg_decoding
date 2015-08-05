@@ -224,8 +224,21 @@ methods
                 % creating separate variables for this since calling a field of an object in Matlab is slow
                 nAvg = ds.nAvg;
                 
-               % ds.the_basic_DS.num_cv_splits = ds.num_cv_splits;
                 ds.the_basic_DS.label_names_to_use = ds.label_names_to_use;
+                
+                if isempty(ds.the_basic_DS.label_names_to_use)
+                    if iscell(ds.the_basic_DS.the_labels)
+                    ds.the_basic_DS.label_names_to_use = unique(ds.the_basic_DS.the_labels{1});
+                    else
+                    ds.the_basic_DS.label_names_to_use = unique(ds.the_basic_DS.the_labels);
+                    end
+                end
+                
+               
+               
+                if isempty(ds.the_basic_DS.label_names_to_use)
+                    ds.the_basic_DS.label_names_to_use = unique(ds.the_basic_DS.the_labels{1});
+                end
                 ds.the_basic_DS.num_times_to_repeat_each_label_per_cv_split = ds.num_times_to_repeat_each_label_per_cv_split;
                 
                 ds.the_basic_DS.sample_sites_with_replacement = ds.sample_sites_with_replacement ;
