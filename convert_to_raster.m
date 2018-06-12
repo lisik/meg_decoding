@@ -1,13 +1,17 @@
-function convert_to_raster(brainstorm_db, protocol, raster_labels_file, raster_folder, time, triggers)
+function convert_to_raster(brainstorm_db, protocol, subject_name, raster_labels_file, ...
+    raster_folder, time, triggers, channels)
 % convert pre-processed brainstorm files to raster format for decoding
 % brainstorm_db - filepath for brainstorm databse (e.g.'~/brainstorm/brainstorm_db')
 % protocol - name of brainstorm protocol 
-% subject name - name of brainstorm subject 
+% subject_name - name of brainstorm subject 
 % raster_labels_file - name of file with struct raster_labels containing stimulus labels for each trial
 % raster_folder - folder where rasters will be saved
 % time - length of epoch time used in brainstorm - 801 (-200:600ms) is value used in Isik et al., 2014)
 % triggers - a vector of the trigger ID's used in the experiment
-% convert_to_raster('~/brainstorm/brainstorm_db', 'test', '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', '~/MEG_decoding_2013/raster_data/test', 801,1)
+% chanels the indices of the MEG channels
+% convert_to_raster('~/brainstorm/brainstorm_db', 'test', 'NewSubject', ...
+% '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', ...
+% '~/MEG_decoding_2013/raster_data/test', 801,1, 1:306)
 
 
 if brainstorm_db(end)~='/'
@@ -22,23 +26,23 @@ if exist(raster_folder,'dir')~=7
 end
 
 load(raster_labels_file)
-nchannels = 1:306; % 306 MEG channels
+%channels = 1:306; % 306 MEG channels
 %time = 1:801;%time range -200:600 ms (used in Isik et al., 2014)
 
-full_dir_name = [brainstorm_db,protocol,'/data/test/'];
+full_dir_name = [brainstorm_db,protocol,'/data/' subject_name '/Default/'];
 
-for trigID = 1:triggers
-%% reorder brainstorm file list in order of stimulus presentation -- probably a better way to do this
-all_files = dir([full_dir_name num2str(trigID) '/data*bandpass.mat']);
+for trigID = triggers
+%% reorder brainstorm file list in order of stimulus presentation and deal with their number/naming convention
+all_files = dir([full_dir_name '/data_' num2str(trigID) '*band.mat']);
 all_files = {all_files.name};
 files{1} = all_files;
 file_breaks = sum(cellfun(@str2num,regexp([all_files{:}], '\d{3,}', 'match'))==1);
 
 for i = file_breaks:-1:2
-files_tmp = dir([full_dir_name num2str(trigID) '/data*_' sprintf('%02d',i) '_bandpass.mat']);
-files{2} = {files_tmp.name};
-file_inds{2} = cellfun(@str2num,regexp([files{2}{:}], '\d{3,}', 'match'));
-[~,ind{2}] = sort(file_inds{2});
+files_tmp = dir([full_dir_name '/data_' num2str(trigID) '*_' sprintf('%02d',i) '_band.mat']);
+files{i} = {files_tmp.name};
+file_inds{i} = cellfun(@str2num,regexp([files{2}{:}], '\d{3,}', 'match'));
+[~,ind{i}] = sort(file_inds{2});
 files{1} = setdiff(files{1}, files{i});
 end
  
@@ -50,17 +54,19 @@ for i = 1:file_breaks
    % keyboard
     file_list{trigID} = [file_list{trigID} files{i}(ind{i})];
 end
-end
 
-rasters = zeros(length(nchannels), length(file_list), time);
+
+rasters = zeros(length(channels), length(file_list), time);
 for i = 1:length(file_list{trigID})
     
     eval(['load ' full_dir_name num2str(trigID) '/' file_list{trigID}{i}])
+    
     rasters(ChannelFlag==1,i,1:size(F,2)) = F(ChannelFlag==1,:);%omit "bad channels"
     clear F ChannelFlag
     
     % print a message the the data is being loaded
-    curr_string = [' Loading trial: ' num2str(i) ' of ' num2str(length(file_list{trigID}))];
+    curr_string = ['\nLoading trigger: ' num2str(trigID) ...
+        '\nLoading trial: ' num2str(i) ' of ' num2str(length(file_list{trigID}))];
     if i == 1
         disp(curr_string); 
     else
@@ -70,8 +76,7 @@ for i = 1:length(file_list{trigID})
 
   
 end
-
-rasters = rasters(nchannels,:,:);
+end
 % 
 % % stimuli = {'basketball', 'bowlingball', 'football', 'hat', 'child', 'man'};
 % sizes = {'large', 'medium', 'small'};
