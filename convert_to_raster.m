@@ -75,13 +75,13 @@ rasters = [rasters zeros(length(channels), length(file_list{trigID}), time)];
 % file_list{trigID} = file_list{trigID}([1:600, length(file_list{trigID})-600:length(file_list{trigID})-1]);
 % keyboard
 for i = 1:length(file_list{trigID})
-    
+    count = count+1;
     eval(['load ' full_dir_name '/' file_list{trigID}{i}])
     
     if size(F,2) < time
-    rasters(:,i,1:size(F,2)) = F(channels,:);%omit "bad channels"
+    rasters(:,count,1:size(F,2)) = F(channels,:);%omit "bad channels"
     else
-    rasters(:,i,1:time) = F(channels,1:time);%omit "bad channels"
+    rasters(:,count,1:time) = F(channels,1:time);%omit "bad channels"
     end
     
     clear F ChannelFlag
