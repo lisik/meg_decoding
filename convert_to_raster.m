@@ -30,6 +30,8 @@ load(raster_labels_file)
 %time = 1:801;%time range -200:600 ms (used in Isik et al., 2014)
 
 full_dir_name = [brainstorm_db,protocol,'/data/' subject_name '/Default/'];
+rasters = [];
+count = 0;
 
 for trigID = triggers
 %% reorder brainstorm file list in order of stimulus presentation and deal with their number/naming convention
@@ -55,13 +57,13 @@ for i = 1:file_breaks
     file_list{trigID} = [file_list{trigID} files{i}(ind{i})];
 end
 
+rasters = [rasters zeros(length(channels), length(file_list{trigID}), time)];
 
-rasters = zeros(length(channels), length(file_list), time);
 for i = 1:length(file_list{trigID})
-    
+    count = count+1;
     eval(['load ' full_dir_name num2str(trigID) '/' file_list{trigID}{i}])
     
-    rasters(ChannelFlag==1,i,1:size(F,2)) = F(ChannelFlag==1,:);%omit "bad channels"
+    rasters(ChannelFlag==1,count,1:size(F,2)) = F(ChannelFlag==1,:);%omit "bad channels"
     clear F ChannelFlag
     
     % print a message the the data is being loaded
