@@ -10,6 +10,7 @@
 % convert_to_raster('~/brainstorm/brainstorm_db', 'test', 'NewSubject', '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', '~/MEG_decoding_2013/raster_data/test', 801,1)
 subjID = '14';
 date = '180608';
+eyelink = 1;
 brainstorm_db = '/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db';
 protocol = sprintf('soc_meg_%s', subjID);
 subject_name = 'NewSubject';
@@ -17,10 +18,15 @@ subject_name = 'NewSubject';
 ntrials = 1800;%1550;%1300;%1040;
 raster_labels_file = sprintf('/mindhive/nklab3/users/lisik/socialInteraction_meg/raw_data/%s/s%s_results.mat', ...
     date, subjID);
-raster_folder = sprintf('/mindhive/nklab3/users/lisik/socialInteraction_meg/raster_data/s%s', subjID);
 time = 1200;
 triggers = [1,2,4];
 channels = 1:306; % 306 MEG channels
+raster_add = [];
+if eyelink 
+    channels = 311:318;
+    raster_add = '_eyelink';
+end
+raster_folder = sprintf('/mindhive/nklab3/users/lisik/socialInteraction_meg/raster_data/s%s%s', subjID, raster_add);
 
 
 if brainstorm_db(end)~='/'
@@ -122,7 +128,7 @@ raster_labels = struct('stim_ID', stim_ID, 'social_ID', social_ID, ...
 %keyboard
 %raster_labels2 = raster_labels;
 %keyboard
-for i = 1:306
+for i = channels
     
     raster_data = squeeze(rasters(i,:,:));
     raster_site_info = struct('recording_channel', i);

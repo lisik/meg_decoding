@@ -1,6 +1,7 @@
 null = 0;
 file_ID = 's14';
-toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.2/';
+eyelink = 0;
+toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
 raster_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/raster_data/';
 bin_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/binned_data/';
 results_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/decoding_results/';
@@ -13,15 +14,20 @@ reps_per_split =[6,144,72,72,72]; %[4,104, 52, 52,4];%
 num_cv_splits = 5;
 TCT = 0;
 
-step_size =25;
-bin_width = 25;
+step_size =10;
+bin_width = 10;
 nAvg = [6 12 12 12 12];
 
 nFeat = 25;
+if eyelink 
+    file_ID = [file_ID '_eyelink'];
+    nFeat = 8;
+end
+
 decoding_runs = 5;
 plot_flag = 1;
 
-for t =1:5
+for t =1:2
 results_fileName = results_fileName_all{t};
 train_inds = train_inds_all{t};
 test_inds = test_inds_all{t};
@@ -74,6 +80,7 @@ the_feature_preprocessors{1} = zscore_normalize_FP;
 % select significant p-values in preprocessing
 the_feature_preprocessors{2}=select_or_exclude_top_k_features_FP;
 the_feature_preprocessors{2}.num_features_to_use = nFeat;
+the_feature_preprocessors{2}.save_extra_info = 1;
 
 if ~iscell(train_inds) % without generalization
 ds = avg_DS(bin_file_name, the_labels_to_use, num_cv_splits, nAvg(t));
@@ -126,10 +133,10 @@ save(save_file_name, 'DECODING_RESULTS', 'DATASOURCE_PARAMS');
 if plot_flag==1
 
 figure
+results_filename{1}{1} = save_file_name;
+plot_obj = plot_standard_results_object(results_filename);
 
-plot_obj = plot_standard_results_object({save_file_name});
-
-plot_obj.errorbar_file_names = ({save_file_name});
+plot_obj.errorbar_file_names{1}{1} = (save_file_name);
 %plot_obj = plot_standard_results_TCT_object(save_file_name);
     
 %%create the correct timescale to display results over
