@@ -8,6 +8,9 @@
 % time - length of epoch time used in brainstorm - 801 (-200:600ms) is value used in Isik et al., 2014)
 % triggers - a vector of the trigger ID's used in the experiment
 % convert_to_raster('~/brainstorm/brainstorm_db', 'test', 'NewSubject', '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', '~/MEG_decoding_2013/raster_data/test', 801,1)
+
+root = '/om/users/lisik/socialInteraction_meg/';
+
 subjID = '14';
 date = '180608';
 eyelink = 1;
@@ -26,7 +29,7 @@ if eyelink
     channels = 311:318;
     raster_add = '_eyelink';
 end
-raster_folder = sprintf('/mindhive/nklab3/users/lisik/socialInteraction_meg/raster_data/s%s%s', subjID, raster_add);
+raster_folder = sprintf('%s/raster_data/s%s%s',root, subjID, raster_add);
 
 
 if brainstorm_db(end)~='/'
