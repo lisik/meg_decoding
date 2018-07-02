@@ -1,10 +1,19 @@
 null = 0;
 file_ID = 's14';
 eyelink = 0;
+om = 1;
+TCT = 1;
+if om 
+    root = '/om/user/lisik/socialInteraction_meg/';
+else
+    root = '/mindhive/nklab3/users/lisik/socialInteraction_meg';
+end
 toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
-raster_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/raster_data/';
-bin_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/binned_data/';
-results_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/decoding_results/';
+
+raster_path = [root 'raster_data/'];
+bin_path = [root 'binned_data/'];
+results_path = [root 'decoding_results/'];
+
 results_fileName_all = {'im_ID','interaction', 'gaze', ...
     'watch_v_social', 'watch_v_non'};
 labels = {'stim_ID', 'social_ID', 'gaze_ID', 'social_ID', 'social_ID'};
@@ -12,7 +21,7 @@ train_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
 test_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
 reps_per_split =[6,144,72,72,72]; %[4,104, 52, 52,4];%
 num_cv_splits = 5;
-TCT = 0;
+
 
 step_size =10;
 bin_width = 10;
@@ -24,10 +33,15 @@ if eyelink
     nFeat = 8;
 end
 
-decoding_runs = 5;
-plot_flag = 1;
+decoding_runs = 20;
+plot_flag = 0;
+null_runs = 1;
+if null
+    null_runs = 1000;
+end
 
-for t =1:2
+for n = 1:null_runs
+for t =1:5
 results_fileName = results_fileName_all{t};
 train_inds = train_inds_all{t};
 test_inds = test_inds_all{t};
@@ -151,5 +165,5 @@ plot_obj.plot_results;
    
 end
 end
-
+end
 %
