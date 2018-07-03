@@ -1,4 +1,6 @@
-null = 0;
+function run_decoding_itx(null, null_ind)
+%null = 0;
+%null_ind = 1;
 file_ID = 's14';
 eyelink = 0;
 om = 1;
@@ -33,14 +35,14 @@ if eyelink
     nFeat = 8;
 end
 
-decoding_runs = 20;
+decoding_runs = 5;
 plot_flag = 0;
 null_runs = 1;
 if null
-    null_runs = 1000;
+null_runs = null_ind:null_ind+9;
 end
 
-for n = 1:null_runs
+for n = null_runs
 for t =1:5
 results_fileName = results_fileName_all{t};
 train_inds = train_inds_all{t};
@@ -167,3 +169,4 @@ end
 end
 end
 %
+end
