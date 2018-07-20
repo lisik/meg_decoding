@@ -11,9 +11,9 @@
 
 root = '/om/users/lisik/socialInteraction_meg/';
 
-subjID = '14';
-date = '180608';
-eyelink = 1;
+subjID = '16';
+date = '180718';
+eyelink = 0;
 brainstorm_db = '/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db';
 protocol = sprintf('soc_meg_%s', subjID);
 subject_name = 'NewSubject';
@@ -48,10 +48,7 @@ load(raster_labels_file)
 full_dir_name = [brainstorm_db,protocol,'/data/' subject_name '/Default/'];
 rasters = [];
 count = 0;
-<<<<<<< HEAD
-=======
 
->>>>>>> origin
 for trigID = triggers
 %% reorder brainstorm file list in order of stimulus presentation -- probably a better way to do this
 %all_files = dir([full_dir_name num2str(trigID) '/data*bandpass.mat']);
@@ -82,7 +79,7 @@ for i = 1:file_breaks
 end
 
 rasters = [rasters zeros(length(channels), length(file_list{trigID}), time)];
-<<<<<<< HEAD
+
 %for i = 1:length(file_list{trigID})
 %rasters = zeros(length(nchannels), 1200, time);
 % keyboard
@@ -98,14 +95,13 @@ for i = 1:length(file_list{trigID})
     rasters(:,count,1:time) = F(channels,1:time);%omit "bad channels"
     end
     
-=======
 
 for i = 1:length(file_list{trigID})
     count = count+1;
     eval(['load ' full_dir_name num2str(trigID) '/' file_list{trigID}{i}])
     
     rasters(ChannelFlag==1,count,1:size(F,2)) = F(ChannelFlag==1,:);%omit "bad channels"
->>>>>>> origin
+
     clear F ChannelFlag
     
     % print a message the the data is being loaded
