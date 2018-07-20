@@ -10,13 +10,14 @@
 % convert_to_raster('~/brainstorm/brainstorm_db', 'test', 'NewSubject', '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', '~/MEG_decoding_2013/raster_data/test', 801,1)
 
 root = '/om/users/lisik/socialInteraction_meg/';
-
+%root = 'mindhive/nklab3/users/lisik/socialInteraction_meg/';
 subjID = '16';
 date = '180718';
+file_breaks = {'', '-1'};
 eyelink = 0;
 brainstorm_db = '/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db';
-protocol = sprintf('soc_meg_%s', subjID);
-subject_name = 'NewSubject';
+protocol = 'social_interaction_meg';
+subject_name = ['soc' subjID];
 %protocol = sprintf('meg_soc_%s', subjID);
 ntrials = 1800;%1550;%1300;%1040;
 raster_labels_file = sprintf('/mindhive/nklab3/users/lisik/socialInteraction_meg/raw_data/%s/s%s_results.mat', ...
@@ -45,39 +46,21 @@ end
 
 load(raster_labels_file)
 
-full_dir_name = [brainstorm_db,protocol,'/data/' subject_name '/Default/'];
 rasters = [];
 count = 0;
+full_dir_name = [brainstorm_db,protocol,'/data/' subject_name '/'];
 
 for trigID = triggers
-%% reorder brainstorm file list in order of stimulus presentation -- probably a better way to do this
-%all_files = dir([full_dir_name num2str(trigID) '/data*bandpass.mat']);
-all_files = dir([full_dir_name '/data_' num2str(trigID) '*band.mat']); %*band.mat
-%all_files = dir([full_dir_name '/data_' num2str(trigID) '*low.mat']);
-all_files = {all_files.name};
-
-file_breaks = sum(cellfun(@str2num,regexp([all_files{:}], '\d{3,}', 'match'))==1);
-for i = 1:file_breaks-1
-files{1} = all_files;
-end    
-
-for i = file_breaks:-1:2
-files_tmp = dir([full_dir_name '/data_' num2str(trigID) '*_' sprintf('%02d',i) '*band.mat']);%*band.mat
-files{i} = {files_tmp.name};
-file_inds{i} = cellfun(@str2num,regexp([files{i}{:}], '\d{3,}', 'match'));
-[~,ind{i}] = sort(file_inds{i});
-files{1} = setdiff(files{1}, files{i});
-end
- 
-file_inds{1} = cellfun(@str2num,regexp([files{1}{:}], '\d{3,}', 'match'));
-[~,ind{1}] = sort(file_inds{1});
-
 file_list{trigID} = [];
-for i = 1:file_breaks
-   % keyboard
-    file_list{trigID} = [file_list{trigID} files{i}(ind{i})];
-end
 
+for i = 1:length(file_breaks)
+
+files = dir([full_dir_name 's' subjID file_breaks{i} '_tsss_mc_band/data_' ...
+    num2str(trigID) '*.mat']); %*band.mat
+%all_files = dir([full_dir_name '/data_' num2str(trigID) '*low.mat']);
+tmp = cellfun(@(x) ['s' subjID file_breaks{i} '_tsss_mc_band/' x], {files.name}, 'UniformOutput', 0);
+file_list{trigID} = [file_list{trigID} tmp];
+end
 rasters = [rasters zeros(length(channels), length(file_list{trigID}), time)];
 
 %for i = 1:length(file_list{trigID})
