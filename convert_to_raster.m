@@ -95,13 +95,6 @@ for i = 1:length(file_list{trigID})
     rasters(:,count,1:time) = F(channels,1:time);%omit "bad channels"
     end
     
-
-for i = 1:length(file_list{trigID})
-    count = count+1;
-    eval(['load ' full_dir_name num2str(trigID) '/' file_list{trigID}{i}])
-    
-    rasters(ChannelFlag==1,count,1:size(F,2)) = F(ChannelFlag==1,:);%omit "bad channels"
-
     clear F ChannelFlag
     
     % print a message the the data is being loaded
