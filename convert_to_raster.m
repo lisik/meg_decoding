@@ -9,11 +9,11 @@
 % triggers - a vector of the trigger ID's used in the experiment
 % convert_to_raster('~/brainstorm/brainstorm_db', 'test', 'NewSubject', '~/MEG/MEG_data/behavior_resp/05_08_12/exp_CBCL_05_08_12_exp_info.mat', '~/MEG_decoding_2013/raster_data/test', 801,1)
 
-root = '/om/users/lisik/socialInteraction_meg/';
+root = '/om/user/lisik/socialInteraction_meg/';
 %root = 'mindhive/nklab3/users/lisik/socialInteraction_meg/';
-subjID = '16';
-date = '180718';
-file_breaks = {'', '-1'};
+subjID = '17';
+date = '180719';
+file_breaks = {'', '-1', '-2'};
 eyelink = 0;
 brainstorm_db = '/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db';
 protocol = 'social_interaction_meg';
@@ -30,7 +30,7 @@ if eyelink
     channels = 311:318;
     raster_add = '_eyelink';
 end
-raster_folder = sprintf('%s/raster_data/s%s%s',root, subjID, raster_add);
+raster_folder = sprintf('%s/raster_data/s%s%s',root, subjID, raster_add)
 
 
 if brainstorm_db(end)~='/'
@@ -93,7 +93,11 @@ for i = 1:length(file_list{trigID})
   
 end
 end
-%rasters = rasters(nchannels,1:ntrials,:);
+size(rasters)
+if strcmp(subjID, '17')
+rasters = rasters(:,[1:1442, 1444:1699, 1701:1802],:);
+size(rasters)
+end
 
 %raster_labels = labels;
 % stim_names = {exp_params.image_list.name};

@@ -1,72 +1,37 @@
-function run_decoding_itx(null, null_ind)
-%null = 0;
-%null_ind = 1;
-file_ID = 's16';
-eyelink = 0;
-om = 1;
-TCT = 1;
-if om 
-    root = '/om/user/lisik/socialInteraction_meg/';
-else
-    root = '/mindhive/nklab3/users/lisik/socialInteraction_meg';
-end
-toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
+null = 0;
+file_ID = 's14';
+toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.2/';
+raster_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/raster_data/';
+bin_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/binned_data/';
+results_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/decoding_results/';
 
-raster_path = [root 'raster_data/'];
-bin_path = [root 'binned_data/'];
-results_path = [root 'decoding_results/'];
-
-results_fileName_all = {'im_ID','interaction', 'gaze', ...
-    'watch_v_social', 'watch_v_non'};
-labels = {'stim_ID', 'social_ID', 'gaze_ID', 'social_ID', 'social_ID'};
-train_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
-test_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
-reps_per_split =[6,144,72,72,72]; %[4,104, 52, 52,4];%
-num_cv_splits = 5;
-
-
-step_size =10;
-bin_width = 10;
-nAvg = [6 24 24 24 24 24];
-
-nFeat = 25;
-if eyelink 
-    file_ID = [file_ID '_eyelink'];
-    nFeat = 8;
-end
-
-decoding_runs = 5;
-plot_flag = 0;
-null_runs = 1;
-if null
-null_runs = null_ind:null_ind+9;
-end
-
-for n = null_runs
-for t =1:5
-results_fileName = results_fileName_all{t};
-train_inds = train_inds_all{t};
-test_inds = test_inds_all{t};
-
-if raster_path(end)~='/'
-    raster_path = [raster_path '/'];
-end
-if bin_path(end)~='/'
-    bin_path = [bin_path '/'];
-end
-if results_path(end)~='/'
-    results_path = [results_path '/'];
-end
-
-%% add paths
+%% add pathsl
 addpath(toolbox_path);
 addpath([toolbox_path 'datasources/']);
+%addpath([toolbox_basedir_name 'feature_preprocessors/']);
 addpath([toolbox_path 'feature_preprocessors/']);
 addpath([toolbox_path 'classifiers/']);
 addpath([toolbox_path 'cross_validators/']);
 addpath([toolbox_path 'helper_functions/']);
 addpath([toolbox_path 'tools/']);
 
+
+step_size =10;
+bin_width = 10;
+
+nFeat = 25;
+decoding_runs = 20;
+plot_flag = 0;
+reps_per_split = 6;
+num_cv_splits = 5;
+nAvg = reps_per_split;
+
+for t = 1:11
+    
+results_fileName=['interaction_invariant_' num2str(t)];
+
+test_inds = {[t, t+1, t+12, t+13], [t+24, t+25, t+36, t+37]};
+train_inds = {setdiff(1:24, test_inds{1}), setdiff(25:48, test_inds{2})};
 
 %% Bin data
 bin_folder = [bin_path file_ID '/'];
@@ -80,37 +45,39 @@ if exist(bin_file_name, 'file')~=2
 end 
 load(bin_file_name);
 
+% binned_data = cellfun(@(x) x(1:1240,:), binned_data, 'UniformOutput', 0);
+% binned_labels.real_stability_ID = cellfun(@(x) x(1:1240), binned_labels.real_stability_ID, 'UniformOutput', 0);
+% %% 
 results_folder = [results_path file_ID];
 if exist(results_folder, 'dir')~=7
     eval(['mkdir ' results_folder])
 end
 
 
-the_labels_to_use = labels{t};
+the_labels_to_use = 'stim_ID';
 
 %% create a feature preprocessor that z-score noramlizes each neuron
 % note that the FP objects are stored in a cell array since multiple FP
 % which allows mutliple FP objects to be used in one analysis
 the_feature_preprocessors{1} = zscore_normalize_FP;
-
 % select significant p-values in preprocessing
 the_feature_preprocessors{2}=select_or_exclude_top_k_features_FP;
 the_feature_preprocessors{2}.num_features_to_use = nFeat;
-the_feature_preprocessors{2}.save_extra_info = 1;
 
-if ~iscell(train_inds) % without generalization
-ds = avg_DS(bin_file_name, the_labels_to_use, num_cv_splits, nAvg(t));
-ds.label_names_to_use = train_inds;
-else % with generalization
-   ds = avg_generalization_DS(bin_file_name, the_labels_to_use,...
+% the_feature_preprocessors{2}=select_pvalue_significant_features_FP;
+% the_feature_preprocessors{2}.pvalue_threshold = .05;
+% the_feature_preprocessors{2}.save_extra_info = 1;
+%keyboard
+
+ds = avg_generalization_DS(bin_file_name, the_labels_to_use,...
         num_cv_splits, train_inds, ...
-        test_inds, nAvg(t));
-end
+        test_inds, nAvg);
+
 
 
 %% DS properties to include for each pe of DS
 ds.create_simultaneously_recorded_populations = 1;
-ds.num_times_to_repeat_each_label_per_cv_split = reps_per_split(t);
+ds.num_times_to_repeat_each_label_per_cv_split = reps_per_split;
 if null==1
 	ds.randomly_shuffle_labels_before_running=1;
 end
@@ -124,7 +91,7 @@ the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_prepr
 % generally we use more than 2 bootstrap runs which will give more accurate results
 % but to save time in this tutorial we are using a small number.
 the_cross_validator.num_resample_runs = decoding_runs;
-the_cross_validator.test_only_at_training_times = ~TCT;
+the_cross_validator.test_only_at_training_times = 1;
 
 %% run the decoding analysis
 DECODING_RESULTS = the_cross_validator.run_cv_decoding;
@@ -134,7 +101,7 @@ DECODING_RESULTS = the_cross_validator.run_cv_decoding;
 DATASOURCE_PARAMS = ds.get_DS_properties;
     
 save_file_name = [results_folder '/' results_fileName '_avg', ...
-        num2str(nAvg(t)) '_top' num2str(nFeat) 'feat_' ,  ...
+        num2str(nAvg) '_top' num2str(nFeat) 'feat_' ,  ...
         num2str(bin_width), 'ms_bins_', num2str(step_size) ,'ms_sampled'];
 if null==1
 eval(['mkdir ' results_folder '/null'])
@@ -149,10 +116,10 @@ save(save_file_name, 'DECODING_RESULTS', 'DATASOURCE_PARAMS');
 if plot_flag==1
 
 figure
-results_filename{1}{1} = save_file_name;
-plot_obj = plot_standard_results_object(results_filename);
 
-plot_obj.errorbar_file_names{1}{1} = (save_file_name);
+plot_obj = plot_standard_results_object({save_file_name});
+
+plot_obj.errorbar_file_names = ({save_file_name});
 %plot_obj = plot_standard_results_TCT_object(save_file_name);
     
 %%create the correct timescale to display results over
@@ -167,6 +134,5 @@ plot_obj.plot_results;
    
 end
 end
-end
+
 %
-end
