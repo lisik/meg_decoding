@@ -1,7 +1,8 @@
-function run_decoding_itx(null, null_ind)
-%null = 0;
-%null_ind = 1;
-file_ID = 's16';
+function run_decoding_itx(subj_num)
+null = 0;
+null_ind = 1;
+%file_ID = ['s' num2str(subj_num)];
+file_ID = sprintf('s%02d', subj_num);
 eyelink = 0;
 om = 1;
 TCT = 1;
@@ -22,12 +23,28 @@ labels = {'stim_ID', 'social_ID', 'gaze_ID', 'social_ID', 'social_ID'};
 train_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
 test_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
 reps_per_split =[6,144,72,72,72]; %[4,104, 52, 52,4];%
+nAvg = [6 24 24 24 24];
 num_cv_splits = 5;
-
 
 step_size =10;
 bin_width = 10;
-nAvg = [6 24 24 24 24 24];
+%nAvg = [6 24 24 24 24];
+
+if subj_num>13
+reps_per_split =[6,144,72,72,72]; %[4,104, 52, 52,4];%
+nAvg = [6 24 24 24 24];
+      
+elseif subj_num==6
+train_inds_all = {1:52, 1:2, 1:2, [1,4], [2,4]};
+test_inds_all = {1:52, 1:2, 1:2, [1,4], [2,4]};  
+reps_per_split = [4,104, 52, 52,52];
+    nAvg = [4 13 13 13 13];
+    else
+train_inds_all = {1:52, 1:2, 1:2, [1,4], [2,4]};
+test_inds_all = {1:52, 1:2, 1:2, [1,4], [2,4]};
+reps_per_split =[5,130,65,50,50];
+    nAvg = [5 13 13 13 13];
+end
 
 nFeat = 25;
 if eyelink 

@@ -1,9 +1,19 @@
+function run_decoding_itx_gen(subj_num)
 null = 0;
-file_ID = 's14';
-toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.2/';
-raster_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/raster_data/';
-bin_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/binned_data/';
-results_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/decoding_results/';
+%file_ID = 's14';
+file_ID = sprintf('s%02d', subj_num);
+%om = 1;
+%if om 
+    root = '/om/user/lisik/socialInteraction_meg/';
+%else
+%    root = '/mindhive/nklab3/users/lisik/socialInteraction_meg';
+%end
+%toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
+
+raster_path = [root 'raster_data/'];
+bin_path = [root 'binned_data/'];
+results_path = [root 'decoding_results/'];
+toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
 
 %% add pathsl
 addpath(toolbox_path);
@@ -24,14 +34,27 @@ decoding_runs = 20;
 plot_flag = 0;
 reps_per_split = 6;
 num_cv_splits = 5;
+
+if subj_num > 13
+reps_per_split = 6;
+elseif subj_num ==6
+  reps_per_split = 4;
+ else
+   reps_per_split = 5;
+end
 nAvg = reps_per_split;
 
 for t = 1:11
     
-results_fileName=['interaction_invariant_' num2str(t)];
+results_fileName=['interaction_invariant_' num2str(t) '_ag'];
 
 test_inds = {[t, t+1, t+12, t+13], [t+24, t+25, t+36, t+37]};
 train_inds = {setdiff(1:24, test_inds{1}), setdiff(25:48, test_inds{2})};
+if subj_num < 14
+test_inds = {[t, t+1, t+13, t+14], [t+26, t+27, t+39, t+40]};
+train_inds = {setdiff(1:26, test_inds{1}), setdiff(27:52, test_inds{2})};
+
+end
 
 %% Bin data
 bin_folder = [bin_path file_ID '/'];
@@ -134,5 +157,5 @@ plot_obj.plot_results;
    
 end
 end
-
+end
 %
