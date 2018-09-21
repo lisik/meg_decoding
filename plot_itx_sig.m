@@ -3,7 +3,7 @@ addpath('/mindhive/nklab3/users/lisik/Toolboxes/graphics_copy/')
 addpath('/mindhive/nklab3/users/lisik/Toolboxes/Functions_stat/')
 results_path = '/om/user/lisik/socialInteraction_meg/decoding_results/';
 results_fileName = {'im_ID', 'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
-subj = {'s06', 's07', 's08', 's09', 's10', 's12', 's13', 's16', 's18','s19', 's22'};
+subj = {'s16','s18','s19', 's22', 's23', 's24', 's25', 's26'}; %s16 is not good...
 
 step_size = 10;
 bin_width =10;
@@ -23,7 +23,7 @@ elseif str2num(subj{s}(2:3)) < 14
 else
     nAvg = [6 24 24 24 24 ];
 end
-for cond = 1:2
+for cond = 1:5
 results_folder = [results_path subj{s}];
 results_file = [results_folder '/' results_fileName{cond} '_avg', ...
         num2str(nAvg(cond)) '_top' num2str(nFeat) 'feat_' ,  ...
@@ -42,6 +42,7 @@ end
 
 t = -225:step_size:step_size*(size(mean_decoding,2)-1)-225;
 
+%% Plot image decoding
 figure; plot(t, squeeze(mean(mean_decoding(1,:,:),3)), 'k', 'LineWidth', 2)
 %figure; shadedErrorBar(t, squeeze(mean(mean_decoding(1,:,:),3)), ...
 %    std(squeeze(mean_decoding(1,:,:))')/sqrt(size(mean_decoding,3)));
@@ -61,7 +62,7 @@ for i = 1:length(SignificantTimes)
         [0.01 0.01], 'k', 'LineWidth',2)
 end
 
-
+%% Plot SI decoding
 
 data = squeeze(mean_decoding(2,:,:));
 data = data' - 0.5;
@@ -84,13 +85,24 @@ for i = 1:length(SignificantTimes)
         [0.485 0.485], 'k', 'LineWidth',2)
 end
 
-% figure; shadedErrorBar(t, squeeze(mean(mean_decoding(3,:,:),3)), ...
-%     std(squeeze(mean_decoding(3,:,:))')/sqrt(size(mean_decoding,1)));
-% hold on; plot([0 0], [0.4 0.7], 'k'); 
-% plot([-225+round(bin_width/2) 1000-bin_width], [1/2, 1/2], 'k')
-% xlim([-200 1000])
-% ylim([0.4 0.7])
-% ylabel('Classification Accuracy')
-% xlabel('Time from stimulus onset (ms) ')
-% title('Mutual gaze vs. joint attention')
-% set(gca, 'FontSize', 14)
+%% Plot gaze decoding
+data = squeeze(mean_decoding(3,:,:));
+data = data' - 0.5;
+[SignificantTimes, clusters,clustersize,StatMapPermPV] = permutation_cluster_1sample(data, 1000, .05, .05);
+
+figure; plot(t, mean(data)+0.5, 'k', 'LineWidth', 2)
+%figure; shadedErrorBar(t, squeeze(mean(mean_decoding(2,:,:),3)), ...
+%    std(squeeze(mean_decoding(2,:,:))')/sqrt(size(mean_decoding,3)));
+hold on; plot([0 0], [0.4 0.7], 'k'); 
+plot([-225+round(bin_width) 990-bin_width], [1/2, 1/2], 'k')
+xlim([-200 1000])
+ylim([0.48 0.6])
+ylabel('Classification Accuracy')
+xlabel('Time from stimulus onset (ms) ')
+title('Gaze decoding')
+set(gca, 'FontSize', 14)
+
+for i = 1:length(SignificantTimes)
+    plot([t(SignificantTimes(i))-bin_width/2 t(SignificantTimes(i))+bin_width/2], ...
+        [0.485 0.485], 'k', 'LineWidth',2)
+end
