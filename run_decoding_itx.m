@@ -19,9 +19,9 @@ results_path = [root 'decoding_results/'];
 
 results_fileName_all = {'im_ID','interaction', 'gaze', ...
     'watch_v_social', 'watch_v_non'};
-labels = {'stim_ID', 'social_ID', 'gaze_ID', 'social_ID', 'social_ID'};
-train_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
-test_inds_all = {1:60, 1:2, 1:2, [1,4], [2,4]};
+labels = {'stim_ID', 'social_ID', 'gaze_ID', 'gaze_ID', 'gaze_ID'};
+train_inds_all = {1:60, 1:2, 1:2, [2,5], [3,5]};
+test_inds_all = {1:60, 1:2, 1:2, [2,5], [3,5]};
 reps_per_split =[6,144,72,72,72]; %[4,104, 52, 52,4];%
 nAvg = [6 24 24 24 24];
 num_cv_splits = 5;
@@ -52,7 +52,7 @@ if eyelink
     nFeat = 8;
 end
 
-decoding_runs = 5;
+decoding_runs = 20;
 plot_flag = 0;
 null_runs = 1;
 if null

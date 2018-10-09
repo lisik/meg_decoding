@@ -2,7 +2,8 @@ clear all
 addpath('/mindhive/nklab3/users/lisik/Toolboxes/graphics_copy/')
 results_path = '/om/user/lisik/socialInteraction_meg/decoding_results/';
 results_fileName = {'im_ID', 'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
-subj = {'s06', 's13', 's16', 's18', 's19', 's22'};
+subj = {'s06', 's16', 's18', 's19', 's22', 's23', 's24'};
+subj = {'s29', 's29'};
 %subj = {'s16', 's16'};
 step_size = 10;
 bin_width =10;

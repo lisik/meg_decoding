@@ -13,9 +13,9 @@ file_ID = sprintf('s%02d', subj_num);
 raster_path = [root 'raster_data/'];
 bin_path = [root 'binned_data/'];
 results_path = [root 'decoding_results/'];
-toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
+toolbox_path = '/om/user/lisik/ndt.1.0.4_exported/';
 
-%% add pathsl
+%% add paths
 addpath(toolbox_path);
 addpath([toolbox_path 'datasources/']);
 %addpath([toolbox_basedir_name 'feature_preprocessors/']);
@@ -33,7 +33,7 @@ nFeat = 25;
 decoding_runs = 20;
 plot_flag = 0;
 reps_per_split = 6;
-num_cv_splits = 5;
+num_cv_splits = 2;
 
 if subj_num > 13
 reps_per_split = 6;
@@ -42,6 +42,7 @@ elseif subj_num ==6
  else
    reps_per_split = 5;
 end
+reps_per_split = reps_per_split*5;
 nAvg = reps_per_split;
 
 for t = 1:11
@@ -94,7 +95,7 @@ the_feature_preprocessors{2}.num_features_to_use = nFeat;
 
 ds = avg_generalization_DS(bin_file_name, the_labels_to_use,...
         num_cv_splits, train_inds, ...
-        test_inds, nAvg);
+        test_inds, nAvg); 
 
 
 

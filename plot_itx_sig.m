@@ -3,7 +3,7 @@ addpath('/mindhive/nklab3/users/lisik/Toolboxes/graphics_copy/')
 addpath('/mindhive/nklab3/users/lisik/Toolboxes/Functions_stat/')
 results_path = '/om/user/lisik/socialInteraction_meg/decoding_results/';
 results_fileName = {'im_ID', 'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
-subj = {'s16','s18','s19', 's22', 's23', 's24', 's25', 's26'}; %s16 is not good...
+subj = {'s16', 's18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29'}; %check s25 preproc
 
 step_size = 10;
 bin_width =10;
@@ -31,11 +31,11 @@ results_file = [results_folder '/' results_fileName{cond} '_avg', ...
 load(results_file);
 if size(DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results,2) > 1
 mean_decoding(cond,:,s) = diag(DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results);
-mean_decoding(cond,:,s) =filter(1/3*ones(1,3), 1, diag(DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results));
+%mean_decoding(cond,:,s) =filter(1/2*ones(1,2), 1, diag(DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results));
 else
     subj{s}
 mean_decoding(cond,:,s) = DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results;
-mean_decoding(cond,:,s) = filter(1/3*ones(1,3), 1, DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results);
+%mean_decoding(cond,:,s) = filter(1/3*ones(1,3), 1, DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results);
 end
 end
 end
@@ -47,7 +47,7 @@ figure; plot(t, squeeze(mean(mean_decoding(1,:,:),3)), 'k', 'LineWidth', 2)
 %figure; shadedErrorBar(t, squeeze(mean(mean_decoding(1,:,:),3)), ...
 %    std(squeeze(mean_decoding(1,:,:))')/sqrt(size(mean_decoding,3)));
 hold on; plot([0 0], [0 0.2], 'k'); 
-plot([-225+round(bin_width/2) 1000-bin_width], [1/52, 1/52], 'k')%1/60
+plot([-225+round(bin_width/2) 1000-bin_width], [1/60, 1/60], 'k')%1/60
 xlim([-200 1000])
 ylabel('Classification Accuracy')
 xlabel('Time from stimulus onset (ms) ')
@@ -55,10 +55,10 @@ title('Image identity')
 set(gca, 'FontSize', 14)
 
 data = squeeze(mean_decoding(1,:,:));
-data = data' - 1/52;
+data = data' - 1/60;
 [SignificantTimes, clusters,clustersize,StatMapPermPV] = permutation_cluster_1sample(data, 1000, .05, .05);
 for i = 1:length(SignificantTimes)
-    plot([t(SignificantTimes(i))-bin_width/2 t(SignificantTimes(i))+bin_width/2], ...
+    plot([t(SignificantTimes(i)) t(SignificantTimes(i))], ...
         [0.01 0.01], 'k', 'LineWidth',2)
 end
 
@@ -74,15 +74,15 @@ figure; plot(t, mean(data)+0.5, 'k', 'LineWidth', 2)
 hold on; plot([0 0], [0.4 0.7], 'k'); 
 plot([-225+round(bin_width) 990-bin_width], [1/2, 1/2], 'k')
 xlim([-200 1000])
-ylim([0.48 0.6])
+ylim([0.45 0.65])
 ylabel('Classification Accuracy')
 xlabel('Time from stimulus onset (ms) ')
 title('Social interaction')
 set(gca, 'FontSize', 14)
 
 for i = 1:length(SignificantTimes)
-    plot([t(SignificantTimes(i))-bin_width/2 t(SignificantTimes(i))+bin_width/2], ...
-        [0.485 0.485], 'k', 'LineWidth',2)
+    plot([t(SignificantTimes(i)) t(SignificantTimes(i))+bin_width], ...
+        [0.465 0.465], 'k', 'LineWidth',2)
 end
 
 %% Plot gaze decoding
@@ -96,7 +96,7 @@ figure; plot(t, mean(data)+0.5, 'k', 'LineWidth', 2)
 hold on; plot([0 0], [0.4 0.7], 'k'); 
 plot([-225+round(bin_width) 990-bin_width], [1/2, 1/2], 'k')
 xlim([-200 1000])
-ylim([0.48 0.6])
+ylim([0.45 0.65])
 ylabel('Classification Accuracy')
 xlabel('Time from stimulus onset (ms) ')
 title('Gaze decoding')
@@ -104,5 +104,5 @@ set(gca, 'FontSize', 14)
 
 for i = 1:length(SignificantTimes)
     plot([t(SignificantTimes(i))-bin_width/2 t(SignificantTimes(i))+bin_width/2], ...
-        [0.485 0.485], 'k', 'LineWidth',2)
+        [0.465 0.465], 'k', 'LineWidth',2)
 end
