@@ -1,4 +1,4 @@
-cdclear all
+clear all
 addpath('/mindhive/nklab3/users/lisik/Toolboxes/graphics_copy/')
 addpath('Functions_stat/')
 file_IDs = {'s16', 's18', 's19', 's22'};
