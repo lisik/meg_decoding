@@ -3,7 +3,7 @@ addpath('/mindhive/nklab3/users/lisik/Toolboxes/graphics_copy/')
 addpath('/mindhive/nklab3/users/lisik/Toolboxes/Functions_stat/')
 results_path = '/om/user/lisik/socialInteraction_meg/decoding_results/';
 results_fileName = {'im_ID', 'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
-subj = {'s16', 's18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29'}; %check s25 preproc
+subj = {'s16','s18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30'}; %check s25 preproc
 
 step_size = 10;
 bin_width =10;
@@ -86,7 +86,7 @@ for i = 1:length(SignificantTimes)
 end
 
 %% Plot gaze decoding
-data = squeeze(mean_decoding(3,:,:));
+data = squeeze(mean_decoding(5,:,:));
 data = data' - 0.5;
 [SignificantTimes, clusters,clustersize,StatMapPermPV] = permutation_cluster_1sample(data, 1000, .05, .05);
 

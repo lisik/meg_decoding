@@ -1,7 +1,8 @@
 clear all
-results_path = '/mindhive/nklab3/users/lisik/socialInteraction_meg/decoding_results/';
+results_path = '/om/user/lisik/socialInteraction_meg/decoding_results/';
 results_fileName = {'im_ID', 'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
-subj = {'s14', 's14'};
+subj = {'s16','s18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30'}; %check s25 preproc
+
 
 step_size = 10;
 bin_width =10;
@@ -10,7 +11,7 @@ nAvg = [6 24 24 24 24];
 
 
 
-for s = 1
+for s = 1:length(subj)
 for cond = 1
 results_folder = [results_path subj{s}];
 results_file = [results_folder '/' results_fileName{cond} '_avg', ...
@@ -24,23 +25,28 @@ pv = DECODING_RESULTS.FP_INFO{2}.the_p_values_org_order;
 selected_sensors = sorted_sensors(:,:,:,1:nFeat);
 
 %get the proprtion of times each sensor was selected
-prop_sel = zeros(size(sorted_sensors,3), size(sorted_sensors,4));
+prop_sel(s,:,:) = zeros(size(sorted_sensors,3), size(sorted_sensors,4));
 %loop through resample runs and CV splits
 for i = 1:size(selected_sensors,1)
 for j = 1:size(selected_sensors,2)
 for t = 1:size(selected_sensors,3)
-    prop_sel(t,squeeze(selected_sensors(i,j,t,:))) = prop_sel(t,squeeze(selected_sensors(i,j,t,:)))+1; 
+    prop_sel(s,t,squeeze(selected_sensors(i,j,t,:))) = prop_sel(s,t,squeeze(selected_sensors(i,j,t,:)))+1; 
 end
 end
 end
 
-prop_sel = prop_sel/(size(selected_sensors,1)*size(selected_sensors,2));
+prop_sel(s,:,:) = prop_sel(s,:,:)/(size(selected_sensors,1)*size(selected_sensors,2));
 
 end
 end
 
+keyboard
+mean_sel = squeeze(mean(prop_sel));
 %% to load into brainstorm format
 % export a data file to Matlab call variable "data", downsample time
-% load('sensor_data_file.mat')
-% data.F(1:306,:) = prop_sel';
-
+load('/mindhive/nklab3/users/lisik/brainstorm/brainstorm3/sensor_data_file_new.mat')
+data.F = zeros(320, 120);
+data.Time = -210:10:980;
+data.F(1:306,:) = mean_sel';
+save(['/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db/sensor_data_file_id.mat'], 'data')
+%% Load in matlab and then in brainstorm load data from matlab

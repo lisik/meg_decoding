@@ -1,7 +1,7 @@
 clear all
 addpath('/mindhive/nklab3/users/lisik/Toolboxes/graphics_copy/')
-addpath('Functions_stat/')
-file_IDs = {'s16', 's18', 's19', 's22'};
+addpath('/mindhive/nklab3/users/lisik/Toolboxes/Functions_stat/')
+file_IDs = {'s16','s18', 's19', 's22', 's23', 's24', 's25',  's26', 's27', 's28', 's29', 's30'};
 %file_IDs = {'s14'};
 %file_IDs = {'s19'};
 %file_IDs = {'s06', 's10'};
@@ -29,7 +29,7 @@ results_file = [results_folder '/' results_fileName '_ag_avg', ...
         num2str(bin_width), 'ms_bins_', num2str(step_size) ,'ms_sampled'];
 load(results_file);
 mean_decoding(t,s,:) = DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results;
-mean_decoding(t,s,:)=filter(1/3*ones(1,3), 1, DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results);
+%mean_decoding(t,s,:)=filter(1/3*ones(1,3), 1, DECODING_RESULTS.ZERO_ONE_LOSS_RESULTS.mean_decoding_results);
 
 end
 end
@@ -52,7 +52,7 @@ figure; plot(time, mean(md), 'k', 'LineWidth', 2)
 hold on; plot([0 0], [0.4 0.7], 'k'); 
 plot([-225+round(bin_width/2) 1000-bin_width], [1/2, 1/2], 'k')
 xlim([-200 1000])
-ylim([0.46 0.57])
+ylim([.45 0.6])
 ylabel('Classification Accuracy')
 xlabel('Time from stimulus onset (ms) ')
 title('Social interaction')
