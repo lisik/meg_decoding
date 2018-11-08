@@ -2,13 +2,7 @@ function run_decoding_itx_gen(subj_num)
 null = 0;
 %file_ID = 's14';
 file_ID = sprintf('s%02d', subj_num);
-%om = 1;
-%if om 
-    root = '/om/user/lisik/socialInteraction_meg/';
-%else
-%    root = '/mindhive/nklab3/users/lisik/socialInteraction_meg';
-%end
-%toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
+root = '/om/user/lisik/socialInteraction_meg/';
 
 raster_path = [root 'raster_data/'];
 bin_path = [root 'binned_data/'];
@@ -27,35 +21,29 @@ addpath([toolbox_path 'tools/']);
 
 
 step_size =10;
-bin_width = 10;
+bin_width = step_size;
 
 nFeat = 25;
 decoding_runs = 20;
 plot_flag = 0;
-reps_per_split = 6;
+reps_per_split = 10;
 num_cv_splits = 2;
 
-if subj_num > 13
-reps_per_split = 6;
-elseif subj_num ==6
-  reps_per_split = 4;
- else
-   reps_per_split = 5;
-end
-reps_per_split = reps_per_split*5;
+reps_per_split = 30;
 nAvg = reps_per_split;
 
-for t = 1:11
+scenarios = [randperm(12) randperm(12)];
+scenarios = [scenarios scenarios(1)];
+
+for t = 1:length(scenarios)-1
     
-results_fileName=['interaction_invariant_' num2str(t) '_ag'];
+results_fileName=['interaction_invariant_' num2str(t) '_r'];
 
 test_inds = {[t, t+1, t+12, t+13], [t+24, t+25, t+36, t+37]};
-train_inds = {setdiff(1:24, test_inds{1}), setdiff(25:48, test_inds{2})};
-if subj_num < 14
-test_inds = {[t, t+1, t+13, t+14], [t+26, t+27, t+39, t+40]};
-train_inds = {setdiff(1:26, test_inds{1}), setdiff(27:52, test_inds{2})};
 
-end
+test_inds = {[scenarios(t), scenarios(t+1), scenarios(t)+12, scenarios(t+1)+12], ...
+    [scenarios(t)+24, scenarios(t+1)+24, scenarios(t)+36, scenarios(t+1)+36]};
+train_inds = {setdiff(1:24, test_inds{1}), setdiff(25:48, test_inds{2})};
 
 %% Bin data
 bin_folder = [bin_path file_ID '/'];
@@ -69,9 +57,6 @@ if exist(bin_file_name, 'file')~=2
 end 
 load(bin_file_name);
 
-% binned_data = cellfun(@(x) x(1:1240,:), binned_data, 'UniformOutput', 0);
-% binned_labels.real_stability_ID = cellfun(@(x) x(1:1240), binned_labels.real_stability_ID, 'UniformOutput', 0);
-% %% 
 results_folder = [results_path file_ID];
 if exist(results_folder, 'dir')~=7
     eval(['mkdir ' results_folder])
@@ -136,27 +121,7 @@ end
 % %keyboard
 save(save_file_name, 'DECODING_RESULTS', 'DATASOURCE_PARAMS');
 
-%% plot data
-if plot_flag==1
 
-figure
-
-plot_obj = plot_standard_results_object({save_file_name});
-
-plot_obj.errorbar_file_names = ({save_file_name});
-%plot_obj = plot_standard_results_TCT_object(save_file_name);
-    
-%%create the correct timescale to display results over
-plot_obj.plot_time_intervals.bin_width = bin_width;
-plot_obj.plot_time_intervals.sampling_interval = step_size;
-plot_obj.plot_time_intervals.alginment_event_time = 226;
-
-%%put a line at the time when the stimulus was shown
-plot_obj.significant_event_times = 0;
-
-plot_obj.plot_results;
-   
-end
 end
 end
 %
