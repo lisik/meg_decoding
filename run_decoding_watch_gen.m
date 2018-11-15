@@ -1,8 +1,14 @@
-function run_decoding_itx_gen(subj_num)
+function run_decoding_watch_gen(subj_num)
 null = 0;
 %file_ID = 's14';
 file_ID = sprintf('s%02d', subj_num);
-root = '/om/user/lisik/socialInteraction_meg/';
+%om = 1;
+%if om 
+    root = '/om/user/lisik/socialInteraction_meg/';
+%else
+%    root = '/mindhive/nklab3/users/lisik/socialInteraction_meg';
+%end
+%toolbox_path = '/mindhive/nklab3/users/lisik/Toolboxes/ndt.1.0.4_exported/';
 
 raster_path = [root 'raster_data/'];
 bin_path = [root 'binned_data/'];
@@ -21,35 +27,35 @@ addpath([toolbox_path 'tools/']);
 
 
 step_size =10;
-bin_width = 10;
+bin_width = 50;
 
 nFeat = 25;
 decoding_runs = 10;
 plot_flag = 0;
-reps_per_split = 10;
+reps_per_split = 6;
 num_cv_splits = 2;
-eyelink = 1;
-if eyelink
-    nFeat = 4;
-    file_ID = [file_ID '_eyelink'];
-end
 
-reps_per_split = 30;
+reps_per_split = reps_per_split*5;
 nAvg = reps_per_split;
-%nAvg = 120;
 
 scenarios = [randperm(12) randperm(12)];
-scenarios = [scenarios scenarios(1)];
 
 for t = 1:length(scenarios)-1
     
-results_fileName=['interaction_invariant_' num2str(t) '_r'];
+results_fileName=['gaze_invariant_' num2str(t) '_r'];
+test_inds = {[t, t+1], [t+12, t+13]};
+test_inds = {[scenarios(t), scenarios(t+1)], [scenarios(t)+12, scenarios(t+1)+12]};
+train_inds = {setdiff(1:12, test_inds{1}), setdiff(13:24, test_inds{2})};
+% 
+results_fileName=['watch_v_social_invariant_' num2str(t) '_r'];
+test_inds = {[t+12, t+13], [t+48, t+49]};
+test_inds = {[scenarios(t)+12 scenarios(t+1)+12], [scenarios(t)+48, scenarios(t+1)+48]};
+train_inds = {setdiff(13:24, test_inds{1}), setdiff(49:60, test_inds{2})};
 
-test_inds = {[t, t+1, t+12, t+13], [t+24, t+25, t+36, t+37]};
-
-test_inds = {[scenarios(t), scenarios(t+1), scenarios(t)+12, scenarios(t+1)+12], ...
-    [scenarios(t)+24, scenarios(t+1)+24, scenarios(t)+36, scenarios(t+1)+36]};
-train_inds = {setdiff(1:24, test_inds{1}), setdiff(25:48, test_inds{2})};
+results_fileName=['watch_v_non_invariant_' num2str(t) '_r'];
+test_inds = {[t+24, t+25], [t+48, t+49]};%% Fix indexing
+test_inds = {[scenarios(t)+24 scenarios(t+1)+24], [scenarios(t)+48 scenarios(t+1)+48]};
+train_inds = {setdiff(25:36, test_inds{1}), setdiff(49:60, test_inds{2})};
 
 %% Bin data
 bin_folder = [bin_path file_ID '/'];
@@ -63,6 +69,9 @@ if exist(bin_file_name, 'file')~=2
 end 
 load(bin_file_name);
 
+% binned_data = cellfun(@(x) x(1:1240,:), binned_data, 'UniformOutput', 0);
+% binned_labels.real_stability_ID = cellfun(@(x) x(1:1240), binned_labels.real_stability_ID, 'UniformOutput', 0);
+% %% 
 results_folder = [results_path file_ID];
 if exist(results_folder, 'dir')~=7
     eval(['mkdir ' results_folder])
@@ -81,7 +90,7 @@ the_feature_preprocessors{2}.num_features_to_use = nFeat;
 
 % the_feature_preprocessors{2}=select_pvalue_significant_features_FP;
 % the_feature_preprocessors{2}.pvalue_threshold = .05;
-the_feature_preprocessors{2}.save_extra_info = 1;
+% the_feature_preprocessors{2}.save_extra_info = 1;
 %keyboard
 
 ds = avg_generalization_DS(bin_file_name, the_labels_to_use,...
@@ -118,14 +127,36 @@ DATASOURCE_PARAMS = ds.get_DS_properties;
 save_file_name = [results_folder '/' results_fileName '_avg', ...
         num2str(nAvg) '_top' num2str(nFeat) 'feat_' ,  ...
         num2str(bin_width), 'ms_bins_', num2str(step_size) ,'ms_sampled'];
-    
-% save_file_name = [results_folder '/' results_fileName '_avg', ...
-%         num2str(nAvg) '_05pv_feat_' ,  ...
-%         num2str(bin_width), 'ms_bins_', num2str(step_size) ,'ms_sampled'];  
+if null==1
+eval(['mkdir ' results_folder '/null'])
+save_file_name = [results_folder '/null/' results_fileName '_avg', ...
+        num2str(nAvg(t)) '_top' num2str(nFeat) 'feat_' ,  ...
+        num2str(bin_width), 'ms_bins_', num2str(step_size) ,'ms_sampled_null' num2str(n)];
+end    
 % %keyboard
 save(save_file_name, 'DECODING_RESULTS', 'DATASOURCE_PARAMS');
 
+%% plot data
+if plot_flag==1
 
+figure
+
+plot_obj = plot_standard_results_object({save_file_name});
+
+plot_obj.errorbar_file_names = ({save_file_name});
+%plot_obj = plot_standard_results_TCT_object(save_file_name);
+    
+%%create the correct timescale to display results over
+plot_obj.plot_time_intervals.bin_width = bin_width;
+plot_obj.plot_time_intervals.sampling_interval = step_size;
+plot_obj.plot_time_intervals.alginment_event_time = 226;
+
+%%put a line at the time when the stimulus was shown
+plot_obj.significant_event_times = 0;
+
+plot_obj.plot_results;
+   
+end
 end
 end
 %

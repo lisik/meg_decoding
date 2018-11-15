@@ -9,7 +9,8 @@ subj = {'s06', 's07', 's08', 's09', 's10',  's12', 's13',...
 %subj = {'s11', 's11'};
 %subj = {'s06', 's07', 's08', 's09', 's10', 's13'};
 %subj = {'s01', 's02', 's03', 's04', 's05'};
-subj = {'s16', 's18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29'}; %check s25 preproc
+subj = {'s16', 's18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', ...
+    's29', 's30', 's31', 's32'}; %check s25 preproc
 
 %subj = {'s09', 's10'};
 %subj = {'s09', 's09'};
@@ -32,7 +33,7 @@ else
     nAvg = [5 13 13 13 13];
 end
 
-for cond = 1:2
+for cond = 1:3
 results_folder = [results_path subj{s}];
 results_file = [results_folder '/' results_fileName{cond} '_avg', ...
         num2str(nAvg(cond)) '_top' num2str(nFeat) 'feat_' ,  ...
@@ -66,3 +67,10 @@ data = squeeze(mean_decoding(2,:,:,:))-0.5;
 
 [SignificantTimes, clusters,clustersize,StatMapPermPV] = permutation_cluster_1sample_2dim(data, 1000, 0.05, 0.05);
 %figure; imagesc(squeeze(mean(mean_decoding(2,:,:,:),2)).*SignificantTimes)
+
+
+figure; imagesc(squeeze(mean(mean_decoding(3,:,:,:),2)))
+data = squeeze(mean_decoding(3,:,:,:))-0.5;
+
+[SignificantTimes3, clusters,clustersize,StatMapPermPV] = permutation_cluster_1sample_2dim(data, 1000, 0.05, 0.05);
+%figure

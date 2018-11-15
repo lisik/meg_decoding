@@ -15,7 +15,7 @@ root = '/om/user/lisik/socialInteraction_meg/';
 subjID = num2str(subj_num);
 %date = num2str(date_num);%'180719';
 file_breaks = {'', '-1', '-2'};
-eyelink = 0;
+eyelink = 1;
 brainstorm_db = '/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db';
 protocol = 'social_interaction_meg';
 subject_name = ['soc' subjID];
@@ -28,7 +28,7 @@ triggers = [1,2,4];
 channels = 1:306; % 306 MEG channels
 raster_add = [];
 if eyelink 
-    channels = 311:318;
+    channels = [313, 314,316,317];
     raster_add = '_eyelink';
 end
 raster_folder = sprintf('%s/raster_data/s%s%s',root, subjID, raster_add)
@@ -119,13 +119,13 @@ raster_labels = struct('stim_ID', stim_ID, 'social_ID', social_ID, ...
 %keyboard
 %raster_labels2 = raster_labels;
 %keyboard
-for i = channels
+for i = 1:length(channels)
     
     raster_data = squeeze(rasters(i,:,:));
-    raster_site_info = struct('recording_channel', i);
+    raster_site_info = struct('recording_channel', channels(i));
 %     load([raster_folder '/raster_ch'  sprintf('%03d', i) '.mat'])
    % raster_labels = raster_labels2;
-    save([raster_folder '/raster_ch'  sprintf('%03d', i) '.mat'], ...
+    save([raster_folder '/raster_ch'  sprintf('%03d', channels(i)) '.mat'], ...
          'raster_labels', 'raster_data', 'raster_site_info');
 i
 end
