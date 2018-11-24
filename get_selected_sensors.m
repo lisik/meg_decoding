@@ -1,7 +1,8 @@
 clear all
 results_path = '/om/user/lisik/socialInteraction_meg/decoding_results/';
 results_fileName = {'im_ID', 'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
-subj = {'s16','s18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', 's30'}; %check s25 preproc
+subj = {'s16','s18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', ...
+    's29', 's30', 's31', 's32', 's33', 's34'}; %check s25 preproc
 
 
 step_size = 10;
@@ -12,7 +13,7 @@ nAvg = [6 24 24 24 24];
 
 
 for s = 1:length(subj)
-for cond = 1
+for cond = 2
 results_folder = [results_path subj{s}];
 results_file = [results_folder '/' results_fileName{cond} '_avg', ...
         num2str(nAvg(cond)) '_top' num2str(nFeat) 'feat_' ,  ...
@@ -48,5 +49,5 @@ load('/mindhive/nklab3/users/lisik/brainstorm/brainstorm3/sensor_data_file_new.m
 data.F = zeros(320, 120);
 data.Time = -210:10:980;
 data.F(1:306,:) = mean_sel';
-save(['/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db/sensor_data_file_id.mat'], 'data')
+save(['/mindhive/nklab3/users/lisik/socialInteraction_meg/plots/labmtgoct/sensor_data_file_soc.mat'], 'data')
 %% Load in matlab and then in brainstorm load data from matlab
