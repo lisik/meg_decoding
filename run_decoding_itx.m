@@ -1,11 +1,11 @@
-function run_decoding_itx(subj_num)
+function run_decoding_itx(subj_num, eyelink)
 null = 0;
 null_ind = 1;
 %file_ID = ['s' num2str(subj_num)];
 file_ID = sprintf('s%02d', subj_num);
-eyelink = 0;
+%eyelink = 1;
 om = 1;
-TCT = 1;
+TCT = 0;
 if om 
     root = '/om/user/lisik/socialInteraction_meg/';
 else
@@ -49,7 +49,7 @@ end
 nFeat = 25;
 if eyelink 
     file_ID = [file_ID '_eyelink'];
-    nFeat = 8;
+    nFeat = 4;
 end
 
 decoding_runs = 20;
