@@ -1,6 +1,5 @@
-function run_decoding_itx_gen(subj_num)
-null = 0;
-%file_ID = 's14';
+function run_decoding_itx_gen(subj_num, eyelink)
+
 file_ID = sprintf('s%02d', subj_num);
 root = '/om/user/lisik/socialInteraction_meg/';
 
@@ -19,16 +18,16 @@ addpath([toolbox_path 'cross_validators/']);
 addpath([toolbox_path 'helper_functions/']);
 addpath([toolbox_path 'tools/']);
 
-
 step_size =10;
 bin_width = 10;
 
 nFeat = 25;
-decoding_runs = 10;
-plot_flag = 0;
-reps_per_split = 10;
-num_cv_splits = 2;
-eyelink = 1;
+decoding_runs = 5;
+num_cv_splits = 5;
+
+% Make eyelink an argument
+null = 0;
+
 if eyelink
     nFeat = 4;
     file_ID = [file_ID '_eyelink'];
@@ -36,19 +35,24 @@ end
 
 reps_per_split = 30;
 nAvg = reps_per_split;
-%nAvg = 120;
+nAvg = 24;
 
 scenarios = [randperm(12) randperm(12)];
 scenarios = [scenarios scenarios(1)];
 
+results_fileName_all={'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
+
+%test_inds = {[t, t+1, t+12, t+13], [t+24, t+25, t+36, t+37]};
+inds = {[0 12; 24 36], [0;12], [12;48], [24;48]};
+for j = 1:4
 for t = 1:length(scenarios)-1
-    
-results_fileName=['interaction_invariant_' num2str(t) '_r'];
+results_fileName = [results_fileName_all{j} '_invariant_' num2str(t)];
 
-test_inds = {[t, t+1, t+12, t+13], [t+24, t+25, t+36, t+37]};
+%test_inds = {[scenarios(t), scenarios(t+1), scenarios(t)+12, scenarios(t+1)+12], ...
+%    [scenarios(t)+24, scenarios(t+1)+24, scenarios(t)+36, scenarios(t+1)+36]};
 
-test_inds = {[scenarios(t), scenarios(t+1), scenarios(t)+12, scenarios(t+1)+12], ...
-    [scenarios(t)+24, scenarios(t+1)+24, scenarios(t)+36, scenarios(t+1)+36]};
+test_inds = {[scenarios(t)+inds{j}(1,:), scenarios(t+1)+inds{j}(1,:)], ...
+    [scenarios(t)+inds{j}(2,:), scenarios(t+1)+inds{j}(2,:)]};
 train_inds = {setdiff(1:24, test_inds{1}), setdiff(25:48, test_inds{2})};
 
 %% Bin data
@@ -126,6 +130,7 @@ save_file_name = [results_folder '/' results_fileName '_avg', ...
 save(save_file_name, 'DECODING_RESULTS', 'DATASOURCE_PARAMS');
 
 
+end
 end
 end
 %
