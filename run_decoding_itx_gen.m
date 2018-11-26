@@ -22,8 +22,8 @@ step_size =10;
 bin_width = 10;
 
 nFeat = 25;
-decoding_runs = 5;
-num_cv_splits = 5;
+decoding_runs = 2;
+num_cv_splits = 2;
 
 % Make eyelink an argument
 null = 0;
@@ -38,14 +38,15 @@ nAvg = reps_per_split;
 nAvg = 24;
 
 scenarios = [randperm(12) randperm(12)];
-scenarios = [scenarios scenarios(1)];
+%scenarios = [scenarios scenarios(1)];
 
 results_fileName_all={'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
 
 %test_inds = {[t, t+1, t+12, t+13], [t+24, t+25, t+36, t+37]};
 inds = {[0 12; 24 36], [0;12], [12;48], [24;48]};
+train_inds_all = {[1:24; 25:48], [1:12;13:24], [13:24; 49:60], [25:36; 49:60]};
 for j = 1:4
-for t = 1:length(scenarios)-1
+for t = 1:20
 results_fileName = [results_fileName_all{j} '_invariant_' num2str(t)];
 
 %test_inds = {[scenarios(t), scenarios(t+1), scenarios(t)+12, scenarios(t+1)+12], ...
@@ -53,7 +54,8 @@ results_fileName = [results_fileName_all{j} '_invariant_' num2str(t)];
 
 test_inds = {[scenarios(t)+inds{j}(1,:), scenarios(t+1)+inds{j}(1,:)], ...
     [scenarios(t)+inds{j}(2,:), scenarios(t+1)+inds{j}(2,:)]};
-train_inds = {setdiff(1:24, test_inds{1}), setdiff(25:48, test_inds{2})};
+train_inds = {setdiff(train_inds_all{j}(1,:), test_inds{1}), ...
+    setdiff(train_inds_all{j}(2,:), test_inds{2})};
 
 %% Bin data
 bin_folder = [bin_path file_ID '/'];
@@ -110,7 +112,7 @@ the_cross_validator = standard_resample_CV(ds, the_classifier, the_feature_prepr
 % generally we use more than 2 bootstrap runs which will give more accurate results
 % but to save time in this tutorial we are using a small number.
 the_cross_validator.num_resample_runs = decoding_runs;
-the_cross_validator.test_only_at_training_times = 1;
+the_cross_validator.test_only_at_training_times = 0;
 
 %% run the decoding analysis
 DECODING_RESULTS = the_cross_validator.run_cv_decoding;
