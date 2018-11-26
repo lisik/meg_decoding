@@ -4,8 +4,8 @@ addpath('/mindhive/nklab3/users/lisik/Toolboxes/Functions_stat/')
 results_path = '/om/user/lisik/socialInteraction_meg/decoding_results/';
 results_fileName = {'im_ID', 'interaction', 'gaze', 'watch_v_social', 'watch_v_non'};
 subj = {'s16','s18','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', ...
-    's30', 's31', 's32', 's33'}; %check s25 preproc
-
+    's30', 's31', 's32', 's33', 's34'}; %check s25 preproc
+eyelink = 1;
 step_size = 10;
 bin_width =10;
 nFeat = 25;
@@ -13,6 +13,13 @@ nAvg = [6 24 24 24 24];
 
 %nAvg = [4 13 13 10 10];
 %nAvg = [6 16];
+eyelink_add = '';
+if eyelink
+    subj = {'s16','s19', 's22', 's23', 's24', 's25', 's26', 's27', 's28', 's29', ...
+    's30',  's32', };
+eyelink_add = '_eyelink';
+nFeat = 4;
+end
 
 
 %mean_decoding = zeros(2, 120,length(subj));
@@ -25,7 +32,7 @@ else
     nAvg = [6 24 24 24 24 ];
 end
 for cond = 1:5
-results_folder = [results_path subj{s}];
+results_folder = [results_path subj{s} eyelink_add];
 results_file = [results_folder '/' results_fileName{cond} '_avg', ...
         num2str(nAvg(cond)) '_top' num2str(nFeat) 'feat_' ,  ...
         num2str(bin_width), 'ms_bins_', num2str(step_size) ,'ms_sampled'];
