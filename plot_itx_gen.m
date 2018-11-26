@@ -32,7 +32,7 @@ nAvg = nAvg*5;
 nAvg = 24;
 results_folder = ['/om/user/lisik/socialInteraction_meg/decoding_results/' file_IDs{s} eyelink_add];
 
-for t = 1:24 % bad inds: 3:6, 8
+for t = 1:20 % bad inds: 3:6, 8
 results_fileName=['interaction_invariant_' num2str(t)]; 
 % results_fileName=['watch_v_social_invariant_' num2str(t)]; 
 % results_fileName=['watch_v_non_invariant_' num2str(t)]; 
