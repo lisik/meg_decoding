@@ -1,4 +1,4 @@
-function convert_to_raster(subj_num)
+function convert_to_raster(subj_num, eyelink)
 %function convert_to_raster(brainstorm_db, protocol, subject_name, raster_labels_file, raster_folder, time, triggers)
 % convert pre-processed brainstorm files to raster format for decoding
 % brainstorm_db - filepath for brainstorm databse (e.g.'~/brainstorm/brainstorm_db')
@@ -15,16 +15,16 @@ root = '/om/user/lisik/socialInteraction_meg/';
 subjID = num2str(subj_num);
 %date = num2str(date_num);%'180719';
 file_breaks = {'', '-1', '-2'};
-eyelink = 1;
+%eyelink = 1;
 brainstorm_db = '/mindhive/nklab3/users/lisik/brainstorm/brainstorm_db';
 protocol = 'social_interaction_meg';
 subject_name = ['soc' subjID];
 %protocol = sprintf('meg_soc_%s', subjID);
-ntrials = 1800;%1550;%1300;%1040;
+ntrials = 1440;%1800;%1550;%1300;%1040;
 raster_labels_file = sprintf('/mindhive/nklab3/users/lisik/socialInteraction_meg/raw_data/ptb_files/s%s_results.mat', ...
    subjID);
 time = 1200;
-triggers = [1,2,4];
+triggers = [1,2];%[1,2,4];
 channels = 1:306; % 306 MEG channels
 raster_add = [];
 if eyelink 
