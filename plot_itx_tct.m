@@ -65,7 +65,7 @@ data = squeeze(mean_decoding(1,:,:,:))-1/52;
 figure; imagesc(squeeze(mean(mean_decoding(2,:,:,:),2)))
 data = squeeze(mean_decoding(2,:,:,:))-0.5;
 
-[SignificantTimes, clusters,clustersize,StatMapPermPV] = permutation_cluster_1sample_2dim(data, 1000, 0.05, 0.05);
+[SignificantTimes2, clusters,clustersize,StatMapPermPV] = permutation_cluster_1sample_2dim(data, 1000, 0.05, 0.05);
 %figure; imagesc(squeeze(mean(mean_decoding(2,:,:,:),2)).*SignificantTimes)
 
 

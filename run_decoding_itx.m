@@ -5,7 +5,7 @@ null_ind = 1;
 file_ID = sprintf('s%02d', subj_num);
 %eyelink = 1;
 om = 1;
-TCT = 0;
+TCT = 1;
 if om 
     root = '/om/user/lisik/socialInteraction_meg/';
 else
@@ -20,8 +20,8 @@ results_path = [root 'decoding_results/'];
 results_fileName_all = {'im_ID','interaction', 'gaze', ...
     'watch_v_social', 'watch_v_non'};
 labels = {'stim_ID', 'social_ID', 'gaze_ID', 'gaze_ID', 'gaze_ID'};
-train_inds_all = {1:60, 1:2, 1:2, [2,5], [3,5]};
-test_inds_all = {1:60, 1:2, 1:2, [2,5], [3,5]};
+train_inds_all = {1:48, 1:2, 1:2, [2,5], [3,5]};
+test_inds_all = {1:48, 1:2, 1:2, [2,5], [3,5]};
 reps_per_split =[6,144,72,72,72]; %[4,104, 52, 52,4];%
 nAvg = [6 24 24 24 24];
 num_cv_splits = 5;
@@ -60,7 +60,7 @@ null_runs = null_ind:null_ind+9;
 end
 
 for n = null_runs
-for t =1:5
+for t =1:3
 results_fileName = results_fileName_all{t};
 train_inds = train_inds_all{t};
 test_inds = test_inds_all{t};

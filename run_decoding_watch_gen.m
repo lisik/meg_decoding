@@ -27,7 +27,7 @@ addpath([toolbox_path 'tools/']);
 
 
 step_size =10;
-bin_width = 50;
+bin_width = 10;
 
 nFeat = 25;
 decoding_runs = 10;
@@ -35,8 +35,15 @@ plot_flag = 0;
 reps_per_split = 6;
 num_cv_splits = 2;
 
+eyelink = 0;
+if eyelink
+    nFeat = 4;
+    file_ID = [file_ID '_eyelink'];
+end
+
 reps_per_split = reps_per_split*5;
 nAvg = reps_per_split;
+nAvg = 24;
 
 scenarios = [randperm(12) randperm(12)];
 
@@ -47,15 +54,15 @@ test_inds = {[t, t+1], [t+12, t+13]};
 test_inds = {[scenarios(t), scenarios(t+1)], [scenarios(t)+12, scenarios(t+1)+12]};
 train_inds = {setdiff(1:12, test_inds{1}), setdiff(13:24, test_inds{2})};
 % 
-results_fileName=['watch_v_social_invariant_' num2str(t) '_r'];
-test_inds = {[t+12, t+13], [t+48, t+49]};
-test_inds = {[scenarios(t)+12 scenarios(t+1)+12], [scenarios(t)+48, scenarios(t+1)+48]};
-train_inds = {setdiff(13:24, test_inds{1}), setdiff(49:60, test_inds{2})};
-
-results_fileName=['watch_v_non_invariant_' num2str(t) '_r'];
-test_inds = {[t+24, t+25], [t+48, t+49]};%% Fix indexing
-test_inds = {[scenarios(t)+24 scenarios(t+1)+24], [scenarios(t)+48 scenarios(t+1)+48]};
-train_inds = {setdiff(25:36, test_inds{1}), setdiff(49:60, test_inds{2})};
+% results_fileName=['watch_v_social_invariant_' num2str(t) '_r'];
+% test_inds = {[t+12, t+13], [t+48, t+49]};
+% test_inds = {[scenarios(t)+12 scenarios(t+1)+12], [scenarios(t)+48, scenarios(t+1)+48]};
+% train_inds = {setdiff(13:24, test_inds{1}), setdiff(49:60, test_inds{2})};
+% 
+% results_fileName=['watch_v_non_invariant_' num2str(t) '_r'];
+% test_inds = {[t+24, t+25], [t+48, t+49]};%% Fix indexing
+% test_inds = {[scenarios(t)+24 scenarios(t+1)+24], [scenarios(t)+48 scenarios(t+1)+48]};
+% train_inds = {setdiff(25:36, test_inds{1}), setdiff(49:60, test_inds{2})};
 
 %% Bin data
 bin_folder = [bin_path file_ID '/'];
@@ -72,7 +79,7 @@ load(bin_file_name);
 % binned_data = cellfun(@(x) x(1:1240,:), binned_data, 'UniformOutput', 0);
 % binned_labels.real_stability_ID = cellfun(@(x) x(1:1240), binned_labels.real_stability_ID, 'UniformOutput', 0);
 % %% 
-results_folder = [results_path file_ID];
+results_folder = [results_path file_ID '/old/'];
 if exist(results_folder, 'dir')~=7
     eval(['mkdir ' results_folder])
 end

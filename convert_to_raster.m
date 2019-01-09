@@ -26,12 +26,18 @@ raster_labels_file = sprintf('/mindhive/nklab3/users/lisik/socialInteraction_meg
 time = 1200;
 triggers = [1,2];%[1,2,4];
 channels = 1:306; % 306 MEG channels
+if subj_num==38
+    channels = 76:381;
+end
 raster_add = [];
 if eyelink 
     channels = [313, 314,316,317];
     raster_add = '_eyelink';
+    if subj_num==38
+        channels = 382:387;
+    end
 end
-raster_folder = sprintf('%s/raster_data/s%s%s',root, subjID, raster_add)
+raster_folder = sprintf('%s/raster_data/s%s%s',root, subjID, raster_add);
 
 
 if brainstorm_db(end)~='/'
@@ -56,7 +62,7 @@ file_list{trigID} = [];
 
 for i = 1:length(file_breaks)
 
-files = dir([full_dir_name 's' subjID file_breaks{i} '_tsss_mc_band/data_' ...
+files = dir([full_dir_name 's*' subjID file_breaks{i} '_tsss_mc_band/data_' ...
     num2str(trigID) '*.mat']); %*band.mat
 %all_files = dir([full_dir_name '/data_' num2str(trigID) '*low.mat']);
 tmp = cellfun(@(x) ['s' subjID file_breaks{i} '_tsss_mc_band/' x], {files.name}, 'UniformOutput', 0);

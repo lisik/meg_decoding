@@ -2,7 +2,7 @@ clear all
 addpath('../../Toolboxes/graphics_copy/')
 file_IDs = {'s16','s19', 's22', 's23', 's24', 's25','s26', 's27', ...
     's28', 's29', 's30','s32'};
-
+file_IDs = {'s35'};
 %file_IDs = {'s18', 's31', 's33', 's34'};
 
 for s = 1:length(file_IDs)
